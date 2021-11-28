@@ -6,6 +6,11 @@ import pandas
 from itertools import count
 
 
+def url(id):
+    """Print Strava URL"""
+    return f"https://www.strava.com/activities/{id}"
+
+
 def analyze(fname: str):
     """Print the top 60 rides by length and their rank."""
     with open(fname, "r") as fh:
@@ -29,9 +34,6 @@ def speed(fname: str):
         print(f"{num} / {den}")
         return 0
 
-    def url(id):
-        return f"https://www.strava.com/activities/{id}"
-
     # 5383195734
 
     data = [r for r in data if r["type"] == "Ride"]
@@ -39,7 +41,7 @@ def speed(fname: str):
     distances = [
         (
             ride["average_speed"] * 3.6,
-            div(ride["distance"], ride["elapsed_time"]) * 3.6,
+            div(3.6 * ride["distance"], ride["elapsed_time"]),
             div(ride["distance"], ride["moving_time"]) * 3.6,
             ride["name"],
             ride["distance"] / 1000,
@@ -56,6 +58,40 @@ def speed(fname: str):
     ranked = [(i, *d) for i, d in enumerate(distances, start=1)]
 
     pprint(ranked[0:10])
+
+
+def flagged(fname: str):
+    """List all flagged activities."""
+    with open(fname, "r") as fh:
+        data = json.load(fh)
+
+    data = [r for r in data if r["flagged"]]
+    distances = [
+        (
+            ride["name"],
+            url(ride["id"]),
+        )
+        for ride in data
+    ]
+    distances.sort(reverse=True)
+    pprint(distances)
+
+
+def kudos(fname: str):
+    """Sort by kudos."""
+    with open(fname, "r") as fh:
+        data = json.load(fh)
+
+    distances = [
+        (
+            ride["kudos_count"],
+            ride["name"],
+            url(ride["id"]),
+        )
+        for ride in data
+    ]
+    distances.sort(reverse=True)
+    pprint(distances[0:10])
 
 
 def plot(fname: str):
