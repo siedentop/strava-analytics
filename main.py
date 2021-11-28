@@ -5,7 +5,7 @@ import os
 TOKEN = os.environ.get("STRAVA_BEARER")
 
 try:
-    response_length = 100000
+    response_length = 100
     data = []
     page = 1
     while response_length > 0:
